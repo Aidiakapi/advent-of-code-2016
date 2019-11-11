@@ -68,6 +68,7 @@ pub fn pt2(input: &str) -> Result<String> {
 }
 
 #[test]
+#[ignore]
 fn day05() -> Result<()> {
     {
         let mut buffer = vec![b'a', b'b', b'c'];
