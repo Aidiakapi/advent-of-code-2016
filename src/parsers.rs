@@ -1,10 +1,10 @@
 pub use nom::{
     bytes::complete::tag,
-    character::complete::{anychar, char, digit1, one_of},
+    character::complete::{anychar, alpha1, char, digit1, one_of},
     combinator::{map, map_res},
     error::ErrorKind,
     multi::{fold_many0, fold_many1, many1, separated_list},
-    sequence::{pair, preceded, tuple},
+    sequence::{pair, preceded, terminated, tuple},
     Err, IResult,
 };
 
