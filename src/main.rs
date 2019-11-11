@@ -2,6 +2,7 @@ extern crate anyhow;
 extern crate aoc_proc_macro;
 extern crate colored;
 extern crate itertools;
+extern crate md5;
 extern crate nom;
 
 pub mod parsers;
@@ -17,6 +18,7 @@ generate_module_list!(DAY_LIST;
     day02[pt1, pt2]: parse,
     day03[pt1, pt2]: parse,
     day04[pt1, pt2]: parse,
+    day05[pt1, pt2],
 );
 
 fn main() {
