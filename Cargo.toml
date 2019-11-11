@@ -8,6 +8,8 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1.0"
+colored = "1.9"
+nom = "5.0"
 
 [dependencies.aoc_proc_macro]
 path = "./proc_macro"

@@ -15,8 +15,13 @@ use std::iter::FromIterator;
 
 fn generate_module_list_impl(token_stream: TokenStream) -> Result<TokenStream, Diagnostic> {
     // parse input
-    let mut modules: Vec<(Ident, Vec<Ident>)> = Vec::new();
-    let mut tokens = token_stream.into_iter();
+    struct Module {
+        name: Ident,
+        parts: Vec<Ident>,
+        parser: Option<Ident>,
+    }
+    let mut modules: Vec<Module> = Vec::new();
+    let mut tokens = token_stream.into_iter().peekable();
 
     let const_ident = match tokens.next() {
         Some(TokenTree::Ident(const_ident)) => const_ident,
@@ -55,7 +60,25 @@ fn generate_module_list_impl(token_stream: TokenStream) -> Result<TokenStream, D
                 }
             }
 
-            modules.push((module_ident, parts));
+            let parser = match tokens.peek().clone() {
+                Some(TokenTree::Punct(punct))
+                    if punct.as_char() == ':' && punct.spacing() == Spacing::Alone =>
+                {
+                    let punct = tokens.next().unwrap();
+                    if let Some(TokenTree::Ident(input_ident)) = tokens.next() {
+                        Some(input_ident)
+                    } else {
+                        return Err(punct.span().error("expected parser name after"));
+                    }
+                }
+                _ => None,
+            };
+
+            modules.push(Module {
+                name: module_ident,
+                parts,
+                parser,
+            });
 
             match tokens.next() {
                 None => {}
@@ -72,33 +95,58 @@ fn generate_module_list_impl(token_stream: TokenStream) -> Result<TokenStream, D
 
     let mut tokens: Vec<TokenTree> = Vec::new();
     // emit module imports
-    for (module, _parts) in &modules {
+    for module in &modules {
         tokens.push(Ident::new("mod", Span::call_site()).into());
-        tokens.push(module.clone().into());
+        tokens.push(module.name.clone().into());
         tokens.push(Punct::new(';', Spacing::Alone).into());
     }
 
     // emit table
     let mut table_tokens = TokenStream::new();
-    for (module, parts) in modules {
-        let module_name: TokenTree = Literal::string(&module.to_string()).into();
+    for module in modules {
+        let module_name: TokenTree = Literal::string(&module.name.to_string()).into();
         // emit parts
         let mut part_tokens = TokenStream::new();
-        for part in parts {
+        for part in &module.parts {
             let part_name: TokenTree = Literal::string(&part.to_string()).into();
-            let call_stream: Vec<TokenTree> = vec![
-                module.clone().into(),
+            let call_part = TokenStream::from_iter(vec![
+                TokenTree::Ident(module.name.clone()),
                 Punct::new(':', Spacing::Joint).into(),
                 Punct::new(':', Spacing::Joint).into(),
-                part.into(),
-            ];
-            let call_stream = TokenStream::from_iter(call_stream.into_iter());
-            part_tokens.extend(quote!(
-                ($part_name, |input: &str, output: &mut String| -> Result<()> {
-                    write!(output, "{}", $call_stream(input)?)?;
-                    Ok(())
-                }),
-            ));
+                part.clone().into(),
+            ]);
+            match module.parser.clone() {
+                Some(parser) => {
+                    let call_parser = TokenStream::from_iter(vec![
+                        TokenTree::Ident(module.name.clone()),
+                        Punct::new(':', Spacing::Joint).into(),
+                        Punct::new(':', Spacing::Joint).into(),
+                        parser.clone().into(),
+                    ]);
+                    part_tokens.extend(quote!(
+                        ($part_name, |input: &str| -> Result<String> {
+                            use ::anyhow::anyhow;
+                            let input = $call_parser(input)
+                                .map_err(|err| anyhow!("parse error {:?}", err))
+                                .and_then(|(remainder, v)| {
+                                    if remainder == "" {
+                                        Ok(v)
+                                    } else {
+                                        Err(anyhow!("input partially parsed, remainder: {:#?}", remainder))
+                                    }
+                                })?;
+                            Ok(format!("{}", $call_part(input)?))
+                        }),
+                    ))
+                }
+                None => {
+                    part_tokens.extend(quote!(
+                        ($part_name, |input: &str| -> Result<String> {
+                            Ok(format!("{}", $call_part(input)?))
+                        }),
+                    ));
+                }
+            }
         }
 
         table_tokens.extend(quote!(
@@ -113,7 +161,7 @@ fn generate_module_list_impl(token_stream: TokenStream) -> Result<TokenStream, D
     tokens.push(const_ident.into());
     tokens.push(Punct::new(':', Spacing::Alone).into());
     tokens.extend(
-        quote!(&[(&'static str, &[(&'static str, fn(&str, &mut String) -> anyhow::Result<()>)])] = {
+        quote!(&[(&'static str, &[(&'static str, fn(&str) -> anyhow::Result<String>)])] = {
         use std::fmt::Write;
         use anyhow::Result;
 
