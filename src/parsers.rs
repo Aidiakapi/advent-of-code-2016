@@ -1,9 +1,9 @@
 pub use nom::{
     bytes::complete::tag,
-    character::complete::{digit1, one_of},
+    character::complete::{anychar, digit1, one_of},
     combinator::{map, map_res},
     error::ErrorKind,
-    multi::separated_list,
+    multi::{many1, separated_list},
     sequence::pair,
     Err, IResult,
 };
