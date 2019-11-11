@@ -14,6 +14,7 @@ use colored::Colorize;
 generate_module_list!(DAY_LIST;
     day01[pt1, pt2]: parse,
     day02[pt1, pt2]: parse,
+    day03[pt1, pt2]: parse,
 );
 
 fn main() {

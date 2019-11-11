@@ -1,10 +1,10 @@
 pub use nom::{
     bytes::complete::tag,
-    character::complete::{anychar, digit1, one_of},
+    character::complete::{anychar, char, digit1, one_of},
     combinator::{map, map_res},
     error::ErrorKind,
-    multi::{many1, separated_list},
-    sequence::pair,
+    multi::{fold_many0, fold_many1, many1, separated_list},
+    sequence::{pair, preceded, tuple},
     Err, IResult,
 };
 
@@ -13,4 +13,11 @@ pub fn u32str(s: &str) -> IResult<&str, u32> {
         s.parse::<u32>()
             .map_err(|_err| Err::Error((s, ErrorKind::Verify)))
     })(s)
+}
+
+pub fn space0(s: &str) -> IResult<&str, ()> {
+    fold_many0(char(' '), (), |_, _| ())(s)
+}
+pub fn space1(s: &str) -> IResult<&str, ()> {
+    fold_many1(char(' '), (), |_, _| ())(s)
 }
