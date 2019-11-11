@@ -9,9 +9,16 @@ pub use nom::{
     Err, IResult,
 };
 
-pub fn u32str(s: &str) -> IResult<&str, u32> {
-    map_res(digit1, |s: &str| {
-        s.parse::<u32>()
-            .map_err(|_err| Err::Error((s, ErrorKind::Verify)))
-    })(s)
+macro_rules! unsigned_nr_str_parser {
+    ($fn_name: ident, $t:ident) => {
+        pub fn $fn_name(s: &str) -> IResult<&str, $t> {
+            map_res(digit1, |s: &str| {
+                s.parse::<$t>()
+                    .map_err(|_err| Err::Error((s, ErrorKind::Digit)))
+            })(s)
+        }
+    };
 }
+
+unsigned_nr_str_parser!(usize_str, usize);
+unsigned_nr_str_parser!(u32_str, u32);

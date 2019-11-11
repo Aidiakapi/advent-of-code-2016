@@ -51,7 +51,7 @@ pub fn parse(s: &str) -> IResult<&str, Vec<Room>> {
     let room = map(
         tuple((
             separated_list(char('-'), alpha1),
-            preceded(char('-'), u32str),
+            preceded(char('-'), u32_str),
             terminated(preceded(char('['), alpha1), char(']')),
         )),
         |(name, sector_id, checksum)| Room {

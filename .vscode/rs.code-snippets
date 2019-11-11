@@ -1,0 +1,22 @@
+{
+    "prelude": {
+        "prefix": "prelude",
+        "body": "use crate::prelude::*;\n",
+        "description": "imports AoC prelude"
+    },
+    "pt1": {
+        "prefix": "pts",
+        "body": "pub fn pt1(input: ${1:&str}) -> Result<${2:()}> {\n\t${3:unimplemented!()}\n}\n\npub fn pt2(input: ${1:&str}) -> Result<${2:()}> {\n\tunimplemented!()\n}",
+        "description": "AoC pt1."
+    },
+    "parser": {
+        "prefix": "parser",
+        "body": "pub fn parse(s: &str) -> IResult<&str, ${1:&str}> {\n\tuse parsers::*;\n\t${2:unimplemented!()}\n}",
+        "description": "An AoC input parser."
+    },
+    "test": {
+        "prefix": "test",
+        "body": "#[test]\npub fn ${1:dayXX}() -> Result<()> {\n\t${2}\n\n\tOk(())\n}",
+        "description": "An AoC unit test."
+    }
+}

@@ -5,10 +5,13 @@ extern crate itertools;
 extern crate md5;
 extern crate nom;
 
+mod mat2;
 pub mod parsers;
 mod prelude;
 #[macro_use]
 mod test_helpers;
+mod vec2;
+mod vec3;
 
 use aoc_proc_macro::generate_module_list;
 use colored::Colorize;
@@ -22,6 +25,7 @@ generate_module_list!(DAY_LIST;
     day05[pt1, pt2],
     day06[pt1, pt2]: parse,
     day07[pt1, pt2]: parse,
+    day08[pts]: parse,
 );
 
 fn main() {

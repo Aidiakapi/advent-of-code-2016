@@ -41,7 +41,7 @@ pub fn parse(s: &str) -> nom::IResult<&str, Vec<Action>> {
                 'R' => Ok(Rotate::Right),
                 _ => Err(()),
             }),
-            u32str,
+            u32_str,
         ),
         |(rotation, amount)| Action {
             rotation,

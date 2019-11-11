@@ -26,9 +26,9 @@ pub fn parse(s: &str) -> IResult<&str, Vec<(u32, u32, u32)>> {
     separated_list(
         tag("\n"),
         tuple((
-            preceded(space0, u32str),
-            preceded(space1, u32str),
-            preceded(space1, u32str),
+            preceded(space0, u32_str),
+            preceded(space1, u32_str),
+            preceded(space1, u32_str),
         )),
     )(s)
 }
