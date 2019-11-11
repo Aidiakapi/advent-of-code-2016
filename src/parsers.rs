@@ -1,10 +1,11 @@
 pub use nom::{
+    branch::alt,
     bytes::complete::tag,
-    character::complete::{anychar, alpha1, char, digit1, line_ending, one_of, space0, space1},
+    character::complete::{alpha1, anychar, char, digit1, line_ending, one_of, space0, space1},
     combinator::{map, map_res},
     error::ErrorKind,
     multi::{fold_many0, fold_many1, many1, separated_list},
-    sequence::{pair, preceded, terminated, tuple},
+    sequence::{delimited, pair, preceded, terminated, tuple},
     Err, IResult,
 };
 
