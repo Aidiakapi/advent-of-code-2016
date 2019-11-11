@@ -12,6 +12,7 @@ mod test_helpers;
 
 use aoc_proc_macro::generate_module_list;
 use colored::Colorize;
+use std::fmt::Debug;
 
 generate_module_list!(DAY_LIST;
     day01[pt1, pt2]: parse,
@@ -19,6 +20,7 @@ generate_module_list!(DAY_LIST;
     day03[pt1, pt2]: parse,
     day04[pt1, pt2]: parse,
     day05[pt1, pt2],
+    day06[pt1, pt2]: parse,
 );
 
 fn main() {
@@ -78,6 +80,12 @@ fn main() {
                             "{} {}",
                             "panic".underline().bright_red(),
                             format!("{}", s).red()
+                        );
+                    } else if let Some(d) = err.downcast_ref::<&dyn Debug>() {
+                        println!(
+                            "{} {}",
+                            "panic".underline().bright_red(),
+                            format!("{:?}", d).red()
                         );
                     } else {
                         println!("{}", "panic without message".underline().bright_red());
