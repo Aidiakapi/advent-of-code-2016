@@ -1,3 +1,5 @@
+#![cfg_attr(debug_assertions, allow(dead_code, unused_variables))]
+
 extern crate anyhow;
 extern crate aoc_proc_macro;
 extern crate colored;
@@ -27,6 +29,7 @@ generate_module_list!(DAY_LIST;
     day07[pt1, pt2]: parse,
     day08[pts]: parse,
     day09[pt1, pt2],
+    day10[pts]: parse,
 );
 
 fn main() {
