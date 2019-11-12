@@ -1,10 +1,10 @@
 pub use nom::{
     branch::alt,
-    bytes::complete::tag,
+    bytes::complete::{tag, take},
     character::complete::{alpha1, anychar, char, digit1, line_ending, one_of, space0, space1},
-    combinator::{map, map_res},
+    combinator::{flat_map, map, map_res},
     error::ErrorKind,
-    multi::{fold_many0, fold_many1, many1, separated_list},
+    multi::{fold_many0, fold_many1, many0, many1, separated_list},
     sequence::{delimited, pair, preceded, terminated, tuple},
     Err, IResult,
 };
@@ -22,3 +22,4 @@ macro_rules! unsigned_nr_str_parser {
 
 unsigned_nr_str_parser!(usize_str, usize);
 unsigned_nr_str_parser!(u32_str, u32);
+unsigned_nr_str_parser!(u64_str, u64);
