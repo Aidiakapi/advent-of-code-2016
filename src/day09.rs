@@ -84,7 +84,7 @@ pub fn pt2(input: &str) -> Result<u64> {
 }
 
 #[test]
-pub fn day09() -> Result<()> {
+fn day09() -> Result<()> {
     assert_eq!(&decompress("ADVENT")?, "ADVENT");
     assert_eq!(&decompress("A(1x5)BC")?, "ABBBBBC");
     assert_eq!(&decompress("(3x3)XYZ")?, "XYZXYZXYZ");

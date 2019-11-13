@@ -318,7 +318,7 @@ pub enum Module<'s> {
 }
 
 #[test]
-pub fn day11() -> Result<()> {
+fn day11() -> Result<()> {
     test_part!(parse, pt1, "\
 The first floor contains a hydrogen-compatible microchip and a lithium-compatible microchip.
 The second floor contains a hydrogen generator.

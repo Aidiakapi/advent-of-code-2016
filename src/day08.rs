@@ -102,7 +102,7 @@ pub enum Instruction {
 }
 
 #[test]
-pub fn day08() -> Result<()> {
+fn day08() -> Result<()> {
     {
         let mut screen = Screen::new(7, 3);
         screen.apply(&Instruction::Rect((3, 2).into()));

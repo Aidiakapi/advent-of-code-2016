@@ -16,7 +16,7 @@
     },
     "test": {
         "prefix": "test",
-        "body": "#[test]\npub fn ${1:dayXX}() -> Result<()> {\n\t${2}\n\n\tOk(())\n}",
+        "body": "#[test]\nfn ${1:dayXX}() -> Result<()> {\n\t${2}\n\n\tOk(())\n}",
         "description": "An AoC unit test."
     }
 }

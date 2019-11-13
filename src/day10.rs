@@ -126,7 +126,7 @@ pub struct Instruction {
 }
 
 #[test]
-pub fn day10() -> Result<()> {
+fn day10() -> Result<()> {
     const EXAMPLE: &'static str = "\
 value 5 goes to bot 2
 bot 2 gives low to bot 1 and high to bot 0

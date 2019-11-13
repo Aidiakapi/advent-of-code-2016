@@ -95,7 +95,7 @@ pub fn parse(s: &str) -> IResult<&str, Vec<Instruction>> {
 }
 
 #[test]
-pub fn day12() -> Result<()> {
+fn day12() -> Result<()> {
     const EXAMPLE: &'static str = "\
 cpy 41 a
 inc a
