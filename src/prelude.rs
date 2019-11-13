@@ -6,4 +6,4 @@ pub use anyhow::{anyhow, Result};
 pub use itertools::Itertools;
 pub use nom::IResult;
 pub use std::collections::{HashMap, HashSet};
-pub use std::iter::{FromIterator, Iterator};
+pub use std::iter::{repeat, FromIterator, Iterator};
