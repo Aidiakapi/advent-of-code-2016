@@ -1,3 +1,4 @@
+#![feature(trait_alias)]
 #![cfg_attr(debug_assertions, allow(dead_code, unused_variables))]
 
 extern crate anyhow;
@@ -9,6 +10,7 @@ extern crate nom;
 
 mod mat2;
 pub mod parsers;
+mod astar;
 mod prelude;
 #[macro_use]
 mod test_helpers;
@@ -32,6 +34,7 @@ generate_module_list!(DAY_LIST;
     day10[pts]: parse,
     day11[pt1, pt2]: parse,
     day12[pt1, pt2]: parse,
+    day13[pt1, pt2]: parse,
 );
 
 fn main() {
