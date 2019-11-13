@@ -20,6 +20,24 @@ macro_rules! unsigned_nr_str_parser {
     };
 }
 
+macro_rules! signed_nr_str_parser {
+    ($fn_name: ident, $t:ident) => {
+        pub fn $fn_name(s: &str) -> IResult<&str, $t> {
+            map_res(
+                pair(opt(one_of("+-")), digit1),
+                |(sign, s): (Option<char>, &str)| {
+                    s.parse::<$t>()
+                        .map_err(|_err| Err::Error((s, ErrorKind::Digit)))
+                        .map(|v| if let Some('-') = sign { -v } else { v })
+                },
+            )(s)
+        }
+    };
+}
+
 unsigned_nr_str_parser!(usize_str, usize);
 unsigned_nr_str_parser!(u32_str, u32);
 unsigned_nr_str_parser!(u64_str, u64);
+
+signed_nr_str_parser!(isize_str, isize);
+signed_nr_str_parser!(i64_str, i64);
