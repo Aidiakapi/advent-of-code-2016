@@ -1,16 +1,23 @@
-#![feature(trait_alias)]
+#![feature(
+    trait_alias,
+    stmt_expr_attributes,
+    const_generics,
+    const_generic_impls_guard
+)]
+#![allow(incomplete_features)]
 #![cfg_attr(debug_assertions, allow(dead_code, unused_variables))]
 
 extern crate anyhow;
 extern crate aoc_proc_macro;
+extern crate arrayvec;
 extern crate colored;
 extern crate itertools;
 extern crate md5;
 extern crate nom;
 
+mod astar;
 mod mat2;
 pub mod parsers;
-mod astar;
 mod prelude;
 #[macro_use]
 mod test_helpers;
