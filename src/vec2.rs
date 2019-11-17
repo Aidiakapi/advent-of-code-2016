@@ -53,6 +53,26 @@ impl<T> Vec2<T> {
     }
 }
 
+impl<T> Vec2<T>
+where
+    T: PartialOrd + Sub<Output = T>,
+{
+    pub fn delta(self, other: Self) -> Self {
+        Vec2 {
+            x: if self.x >= other.x {
+                self.x - other.x
+            } else {
+                other.x - self.x
+            },
+            y: if self.y >= other.y {
+                self.y - other.y
+            } else {
+                other.y - self.y
+            },
+        }
+    }
+}
+
 impl<T> From<T> for Vec2<T>
 where
     T: Clone,
@@ -214,8 +234,10 @@ where
     }
 
     fn abs_sub(&self, other: &Self) -> Self {
-        let delta = self.clone() - other.clone();
-        <Self as Signed>::abs(&delta)
+        Vec2 {
+            x: self.x.abs_sub(&other.x),
+            y: self.y.abs_sub(&other.y),
+        }
     }
 
     fn signum(&self) -> Self {

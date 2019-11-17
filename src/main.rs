@@ -17,7 +17,7 @@ extern crate nom;
 
 mod astar;
 mod mat2;
-pub mod parsers;
+mod parsers;
 mod prelude;
 #[macro_use]
 mod test_helpers;

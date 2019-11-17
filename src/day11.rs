@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use arrayvec::ArrayVec;
 use std::fmt::{Debug, Formatter, Result as fmtResult};
 
 trait FacilityBounds = std::array::LengthAtMost32 + Clone + Eq + Ord + std::hash::Hash;
