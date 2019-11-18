@@ -5,7 +5,7 @@
     const_generic_impls_guard
 )]
 #![allow(incomplete_features)]
-#![cfg_attr(debug_assertions, allow(dead_code, unused_variables))]
+#![cfg_attr(debug_assertions, allow(dead_code, unused_imports, unused_variables))]
 
 extern crate anyhow;
 extern crate aoc_proc_macro;
@@ -42,6 +42,7 @@ generate_module_list!(DAY_LIST;
     day11[pt1, pt2]: parse,
     day12[pt1, pt2]: parse,
     day13[pt1, pt2]: parse,
+    day14[pt1, pt2],
 );
 
 fn main() {

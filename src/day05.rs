@@ -1,11 +1,12 @@
 use crate::prelude::*;
 
-fn byte_to_hex(b: u8) -> char {
-    assert!(b < 16);
+#[inline(always)]
+pub fn byte_to_hex(b: u8) -> char {
+    debug_assert!(b < 16);
     (if b < 10 { b'0' + b } else { b'a' - 10 + b }) as char
 }
 
-fn write_u64_to_buffer(buffer: &mut Vec<u8>, mut nr: u64) {
+pub fn write_u64_to_buffer(buffer: &mut Vec<u8>, mut nr: u64) {
     let start_len = buffer.len();
     loop {
         buffer.push((nr % 10) as u8 + b'0');
