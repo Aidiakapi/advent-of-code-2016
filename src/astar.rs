@@ -67,14 +67,14 @@ impl<N: Node, C: Cost> AStar<N, C> {
     pub fn solve<FN, FH, FD, NI>(
         &mut self,
         init: N,
-        next: FN,
-        heuristic: FH,
-        is_done: FD,
+        mut next: FN,
+        mut heuristic: FH,
+        mut is_done: FD,
     ) -> Option<&Vec<(N, C)>>
     where
-        FN: Fn(&N) -> NI,
-        FH: Fn(&N) -> C,
-        FD: Fn(&N) -> bool,
+        FN: FnMut(&N) -> NI,
+        FH: FnMut(&N) -> C,
+        FD: FnMut(&N) -> bool,
         NI: IntoIterator<Item = (N, C)>,
     {
         // Used to get FIFO behaviour from the open set

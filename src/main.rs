@@ -37,6 +37,7 @@ generate_module_list!(DAY_LIST;
     day14[pt1, pt2],
     day15[pt1, pt2]: parse,
     day16[pt1, pt2]: parse,
+    day17[pt1, pt2]: parse,
 );
 
 fn main() {
