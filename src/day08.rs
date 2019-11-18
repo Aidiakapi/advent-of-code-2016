@@ -45,7 +45,7 @@ impl Display for Screen {
                 if self.0[x][y] {
                     write!(f, "█")?;
                 } else {
-                    write!(f, "░")?;
+                    write!(f, " ")?;
                 }
             }
             if y != self.0.height() - 1 {
@@ -112,7 +112,7 @@ fn day08() -> Result<()> {
             "\
 ███░░░░
 ███░░░░
-░░░░░░░"
+░░░░░░░".replace("░", " ")
         );
         screen.apply(&Instruction::RotateColumn {
             column: 1,
@@ -123,7 +123,7 @@ fn day08() -> Result<()> {
             "\
 █░█░░░░
 ███░░░░
-░█░░░░░"
+░█░░░░░".replace("░", " ")
         );
         screen.apply(&Instruction::RotateRow { row: 0, amount: 4 });
         assert_eq!(
@@ -131,7 +131,7 @@ fn day08() -> Result<()> {
             "\
 ░░░░█░█
 ███░░░░
-░█░░░░░"
+░█░░░░░".replace("░", " ")
         );
         screen.apply(&Instruction::RotateColumn {
             column: 1,
@@ -142,7 +142,7 @@ fn day08() -> Result<()> {
             "\
 ░█░░█░█
 █░█░░░░
-░█░░░░░"
+░█░░░░░".replace("░", " ")
         );
     }
 
