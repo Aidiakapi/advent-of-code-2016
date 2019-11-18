@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use num_traits::{
+use num::traits::{
     identities::{One, Zero},
     sign::{Signed, Unsigned},
     Num,

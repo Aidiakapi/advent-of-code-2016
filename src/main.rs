@@ -7,14 +7,6 @@
 #![allow(incomplete_features)]
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports, unused_variables))]
 
-extern crate anyhow;
-extern crate aoc_proc_macro;
-extern crate arrayvec;
-extern crate colored;
-extern crate itertools;
-extern crate md5;
-extern crate nom;
-
 mod astar;
 mod mat2;
 mod parsers;
@@ -43,6 +35,7 @@ generate_module_list!(DAY_LIST;
     day12[pt1, pt2]: parse,
     day13[pt1, pt2]: parse,
     day14[pt1, pt2],
+    day15[pt1, pt2]: parse,
 );
 
 fn main() {

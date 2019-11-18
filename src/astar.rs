@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use num_traits::Zero;
+use num::traits::Zero;
 use std::cmp::{Ord, Ordering, PartialEq, PartialOrd};
 use std::collections::{BinaryHeap, HashMap};
 use std::hash::Hash;
