@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use std::cmp::{Ord, Ordering};
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Range {
