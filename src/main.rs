@@ -8,6 +8,7 @@
 #![allow(incomplete_features)]
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports, unused_variables))]
 
+mod assembunny;
 mod astar;
 mod mat2;
 mod parsers;
