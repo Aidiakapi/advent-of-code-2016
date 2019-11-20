@@ -73,9 +73,14 @@ where
     }
 }
 
+pub auto trait IsNotVec2 {}
+impl<T> !IsNotVec2 for Vec2<T> {}
+pub auto trait NotEq {}
+impl<X> !NotEq for (X, X) {}
+
 impl<T> From<T> for Vec2<T>
 where
-    T: Clone,
+    T: Clone + IsNotVec2,
 {
     fn from(value: T) -> Self {
         Vec2 {
@@ -89,6 +94,19 @@ impl<T> From<(T, T)> for Vec2<T> {
         Vec2 {
             x: value.0,
             y: value.1,
+        }
+    }
+}
+
+impl<T, U> From<Vec2<U>> for Vec2<T>
+where
+    T: From<U>,
+    (T, U): NotEq,
+{
+    fn from(value: Vec2<U>) -> Self {
+        Vec2 {
+            x: T::from(value.x),
+            y: T::from(value.y),
         }
     }
 }
