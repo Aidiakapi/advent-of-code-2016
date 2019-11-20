@@ -1,8 +1,9 @@
 #![feature(
-    trait_alias,
-    stmt_expr_attributes,
     const_generics,
-    const_generic_impls_guard
+    const_generic_impls_guard,
+    optin_builtin_traits,
+    stmt_expr_attributes,
+    trait_alias
 )]
 #![allow(incomplete_features)]
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports, unused_variables))]
@@ -42,6 +43,7 @@ generate_module_list!(DAY_LIST;
     day19[pt1, pt2]: parse,
     day20[pt1, pt2]: parse,
     day21[pt1, pt2]: parse,
+    day22[pt1, pt2]: parse,
 );
 
 fn main() {

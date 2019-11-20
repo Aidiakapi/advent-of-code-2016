@@ -37,6 +37,7 @@ macro_rules! signed_nr_str_parser {
 }
 
 unsigned_nr_str_parser!(usize_str, usize);
+unsigned_nr_str_parser!(u16_str, u16);
 unsigned_nr_str_parser!(u32_str, u32);
 unsigned_nr_str_parser!(u64_str, u64);
 
