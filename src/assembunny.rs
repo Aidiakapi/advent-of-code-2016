@@ -3,8 +3,8 @@ use std::fmt::{self, Display, Formatter};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Program {
-    instructions: Vec<Instruction>,
-    instruction_ptr: i64,
+    pub instructions: Vec<Instruction>,
+    pub instruction_ptr: i64,
 }
 
 pub const REGISTERY_SIZE: usize = 4;
@@ -203,6 +203,7 @@ pub fn parse_assembunny(s: &str) -> nom::IResult<&str, Vec<Instruction>> {
         instr_1op("tgl", Instruction::Toggle),
         instr_1op("inc", Instruction::Increment),
         instr_1op("dec", Instruction::Decrement),
+        map(preceded(tag("out "), parse_value), Instruction::Out),
         instr_2op("cpy", Instruction::Copy),
         instr_2op("jnz", Instruction::JumpIfNotZero),
     ));
