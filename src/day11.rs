@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use std::fmt::{Debug, Formatter, Result as fmtResult};
 
 trait FacilityBounds = std::array::LengthAtMost32 + Clone + Eq + Ord + std::hash::Hash;
 
@@ -307,7 +306,7 @@ where
 }
 
 impl Debug for Element {
-    fn fmt(&self, fmt: &mut Formatter) -> fmtResult {
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(fmt, "G({})xM({})", self.generator(), self.microchip())
     }
 }

@@ -1,4 +1,5 @@
 #![feature(
+    array_value_iter,
     const_generics,
     const_generic_impls_guard,
     optin_builtin_traits,
@@ -46,6 +47,7 @@ generate_module_list!(DAY_LIST;
     day21[pt1, pt2]: parse,
     day22[pt1, pt2]: parse,
     day23[pt1, pt2]: parse,
+    day24[pts]: parse,
 );
 
 fn main() {

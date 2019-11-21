@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct Screen(Mat2<bool>);

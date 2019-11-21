@@ -6,8 +6,8 @@ pub struct Range {
     to: u32,
 }
 
-impl std::fmt::Debug for Range {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl Debug for Range {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "{}..={}", self.from, self.to)
     }
 }
