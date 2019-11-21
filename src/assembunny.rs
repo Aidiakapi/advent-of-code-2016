@@ -1,4 +1,5 @@
 use anyhow::anyhow;
+use std::fmt::{self, Display, Formatter};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Program {
@@ -66,8 +67,6 @@ impl Program {
                 if new_ptr >= 0 && new_ptr < self.instructions.len() as i64 {
                     self.instructions[new_ptr as usize] =
                         self.instructions[new_ptr as usize].toggle();
-                } else {
-                    panic!("toggle was out of range");
                 }
             }
             Instruction::Increment(reg) => registers[*reg] += 1,
@@ -111,4 +110,53 @@ impl Value {
             Value::Register(index) => registers[index],
         }
     }
+}
+
+impl Display for Program {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        use fmt::Write;
+        for (idx, instr) in self.instructions.iter().enumerate() {
+            f.write_char(if self.instruction_ptr == idx as i64 {
+                '>'
+            } else {
+                ' '
+            })?;
+            match instr {
+                Instruction::Toggle(v) => write!(f, "tgl {}\n", v),
+                Instruction::Increment(v) => write!(f, "inc {}\n", v),
+                Instruction::Decrement(v) => write!(f, "dec {}\n", v),
+                Instruction::Copy(a, b) => write!(f, "cpy {} {}\n", a, b),
+                Instruction::JumpIfNotZero(a, b) => write!(f, "jnz {} {}\n", a, b),
+            }?;
+        }
+        Ok(())
+    }
+}
+
+impl Display for Value {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        use fmt::Write;
+        match self {
+            Value::Constant(c) => write!(f, "{}", c),
+            Value::Register(r) => f.write_char((b'a' + *r as u8) as char),
+        }
+    }
+}
+
+pub fn parse_register(s: &str) -> nom::IResult<&str, usize> {
+    use crate::parsers::*;
+    map_res(anychar, |c| {
+        if c >= 'a' && c <= 'z' {
+            Ok((c as u8 - b'a') as usize)
+        } else {
+            Err(())
+        }
+    })(s)
+}
+pub fn parse_value(s: &str) -> nom::IResult<&str, Value> {
+    use crate::parsers::*;
+    alt((
+        map(parse_register, Value::Register),
+        map(i64_str, Value::Constant),
+    ))(s)
 }

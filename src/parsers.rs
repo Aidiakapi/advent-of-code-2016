@@ -41,5 +41,4 @@ unsigned_nr_str_parser!(u16_str, u16);
 unsigned_nr_str_parser!(u32_str, u32);
 unsigned_nr_str_parser!(u64_str, u64);
 
-signed_nr_str_parser!(isize_str, isize);
 signed_nr_str_parser!(i64_str, i64);

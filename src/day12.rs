@@ -18,21 +18,6 @@ pub fn pt2(program: Vec<Instruction>) -> Result<i64> {
 
 pub fn parse(s: &str) -> IResult<&str, Vec<Instruction>> {
     use parsers::*;
-    fn parse_register(s: &str) -> IResult<&str, usize> {
-        map_res(anychar, |c| {
-            if c >= 'a' && c <= 'z' {
-                Ok((c as u8 - b'a') as usize)
-            } else {
-                Err(())
-            }
-        })(s)
-    }
-    fn parse_value(s: &str) -> IResult<&str, Value> {
-        alt((
-            map(parse_register, Value::Register),
-            map(i64_str, Value::Constant),
-        ))(s)
-    }
     #[rustfmt::skip]
     fn parse_instruction(s: &str) -> IResult<&str, Instruction> {
         alt((
