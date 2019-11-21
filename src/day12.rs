@@ -4,7 +4,7 @@ use crate::prelude::*;
 pub fn pt1(program: Vec<Instruction>) -> Result<i64> {
     let mut regs = Registers::default();
     let mut program = Program::new(program)?;
-    program.run_to_end(&mut regs);
+    program.run_to_end(&mut regs, |_| {});
     Ok(regs[0])
 }
 
@@ -12,23 +12,21 @@ pub fn pt2(program: Vec<Instruction>) -> Result<i64> {
     let mut regs = Registers::default();
     regs[2] = 1;
     let mut program = Program::new(program)?;
-    program.run_to_end(&mut regs);
+    program.run_to_end(&mut regs, |_| {});
     Ok(regs[0])
 }
 
 pub fn parse(s: &str) -> IResult<&str, Vec<Instruction>> {
     use parsers::*;
-    #[rustfmt::skip]
-    fn parse_instruction(s: &str) -> IResult<&str, Instruction> {
-        alt((
-            map(preceded(tag("cpy "), pair(parse_value, preceded(char(' '), parse_register))), |(a, b)| Instruction::Copy(a, Value::Register(b))),
-            map(preceded(tag("inc "), parse_register), Instruction::Increment),
-            map(preceded(tag("dec "), parse_register), Instruction::Decrement),
-            map(preceded(tag("jnz "), pair(parse_value, preceded(char(' '), i64_str))), |(a, b)| Instruction::JumpIfNotZero(a, Value::Constant(b))),
-        ))(s)
-    }
-
-    separated_list(line_ending, parse_instruction)(s)
+    map_res(parse_assembunny, |instrs| {
+        for instr in &instrs {
+            match instr {
+                Instruction::Toggle(_) | Instruction::Out(_) => return Err(()),
+                _ => {}
+            }
+        }
+        Ok(instrs)
+    })(s)
 }
 
 #[test]
