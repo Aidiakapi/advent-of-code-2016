@@ -19,9 +19,10 @@ mod test_helpers;
 mod vec2;
 mod vec3;
 
+use anyhow::anyhow;
 use aoc_proc_macro::generate_module_list;
-use colored::Colorize;
-use std::fmt::Debug;
+use std::sync::{mpsc, Arc, Mutex};
+use std::thread;
 
 generate_module_list!(DAY_LIST;
     day01[pt1, pt2]: parse,
@@ -51,76 +52,145 @@ generate_module_list!(DAY_LIST;
     day25[pt]: parse,
 );
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum TaskState {
+    Pending,
+    Running,
+    Done,
+}
+
+// Used on main thread
+struct TaskTracker {
+    module_name: &'static str,
+    part_name: &'static str,
+    state: TaskState,
+    output: Option<Result<String, anyhow::Error>>,
+}
+
+// Used on worker thread
+struct TaskWork {
+    input: String,
+    function: fn(&str) -> Result<String, anyhow::Error>,
+}
+
+// Sent from worker thread to main thread
+enum TaskUpdate {
+    WorkStarted(usize),
+    WorkDone(usize, Result<String, anyhow::Error>),
+}
+
+fn pop_work(work_queue: &Mutex<Vec<Option<TaskWork>>>) -> Option<(usize, TaskWork)> {
+    let mut work_queue = work_queue.lock().unwrap();
+    loop {
+        let len = work_queue.len();
+        match work_queue.pop()? {
+            Some(work) => return Some((len - 1, work)),
+            None => continue,
+        }
+    }
+}
+
 fn main() {
-    if cfg!(windows) {
-        colored::control::set_virtual_terminal(true).unwrap();
+    println!("\nAdvent of Code 2016\n");
+    let exclusive_day = std::env::args().skip(1).next();
+    let (mut task_trackers, task_work): (Vec<_>, Vec<_>) = DAY_LIST
+        .iter()
+        .cloned()
+        .filter(|&(module_name, _)| {
+            if let Some(exclusive_day) = &exclusive_day {
+                exclusive_day == module_name
+            } else {
+                true
+            }
+        })
+        .flat_map(|(module_name, parts)| {
+            let input = std::fs::read_to_string(format!("./data/{}.txt", module_name));
+
+            parts
+                .iter()
+                .cloned()
+                .map(move |(part_name, function)| match &input {
+                    Ok(input) => (
+                        TaskTracker {
+                            module_name,
+                            part_name,
+                            state: TaskState::Pending,
+                            output: None,
+                        },
+                        Some(TaskWork {
+                            input: input.clone(),
+                            function,
+                        }),
+                    ),
+                    Err(err) => (
+                        TaskTracker {
+                            module_name,
+                            part_name,
+                            state: TaskState::Done,
+                            output: Some(Err(anyhow!(
+                                "cannot read input file ./data/{}.txt ({})",
+                                module_name,
+                                err
+                            ))),
+                        },
+                        None,
+                    ),
+                })
+        })
+        .unzip();
+
+    if task_trackers.len() == 0 {
+        println!("No tasks to run");
+        return;
     }
 
-    println!(
-        "\n{} {} {} {}\n",
-        "Advent".bright_red().bold(),
-        "of".bright_white(),
-        "Code".bright_green().bold(),
-        "2016".bright_blue()
-    );
+    let (result_sender, result_receiver) = mpsc::channel::<TaskUpdate>();
 
-    let exclusive_day = {
-        let mut args = std::env::args();
-        args.next();
-        args.next()
-    };
-
-    for (day_name, parts) in DAY_LIST {
-        if let Some(exclusive_day) = &exclusive_day {
-            if exclusive_day != day_name {
-                continue;
-            }
-        }
-
-        let input: String = match std::fs::read_to_string(format!("./data/{}.txt", day_name)) {
-            Ok(value) => value,
-            Err(err) => {
-                println!(
-                    "{} {} ({})\n",
-                    day_name.green(),
-                    "error: cannot read day input".red().bold(),
-                    err
-                );
-                continue;
-            }
-        };
-        let input = input.trim();
-
-        for (part_name, part_func) in *parts {
-            println!("{} {}", day_name.green(), part_name.blue().bold());
-            match std::panic::catch_unwind(|| match part_func(&input) {
-                Ok(output) => println!("{}", output.bright_white()),
-                Err(err) => println!(
-                    "{} {}",
-                    "error".underline().bright_red(),
-                    format!("{:?}", err).red()
-                ),
-            }) {
-                Ok(()) => {}
-                Err(err) => {
-                    if let Some(s) = err.downcast_ref::<&str>() {
-                        println!(
-                            "{} {}",
-                            "panic".underline().bright_red(),
-                            format!("{}", s).red()
-                        );
-                    } else if let Some(d) = err.downcast_ref::<&dyn Debug>() {
-                        println!(
-                            "{} {}",
-                            "panic".underline().bright_red(),
-                            format!("{:?}", d).red()
-                        );
-                    } else {
-                        println!("{}", "panic without message".underline().bright_red());
-                    }
+    let work_count = task_work.iter().filter(|work| work.is_some()).count();
+    let work_queue = Arc::new(Mutex::new(task_work));
+    let worker_threads = (0..(num_cpus::get() - 1).max(1).min(work_count))
+        .map(|_| {
+            let work_queue = work_queue.clone();
+            let result_sender = result_sender.clone();
+            thread::spawn(move || {
+                while let Some((task_index, work)) = pop_work(&work_queue) {
+                    result_sender
+                        .send(TaskUpdate::WorkStarted(task_index))
+                        .unwrap();
+                    let result = std::panic::catch_unwind(move || (work.function)(&work.input))
+                        .unwrap_or_else(|err| Err(anyhow!("panic: {:?}", err)));
+                    result_sender
+                        .send(TaskUpdate::WorkDone(task_index, result))
+                        .unwrap();
                 }
-            };
+            })
+        })
+        .collect::<Vec<_>>();
+
+    let mut work_left = work_count;
+    while work_left > 0 {
+        match result_receiver.recv().unwrap() {
+            TaskUpdate::WorkStarted(idx) => {
+                let task = &mut task_trackers[idx];
+                task.state = TaskState::Running;
+                println!("{} - {} has started", task.module_name, task.part_name);
+            }
+            TaskUpdate::WorkDone(idx, result) => {
+                let task = &mut task_trackers[idx];
+                task.state = TaskState::Done;
+                task.output = Some(result);
+                println!(
+                    "{} - {} has finished:\n{:?}",
+                    task.module_name,
+                    task.part_name,
+                    task.output.as_ref().unwrap()
+                );
+                work_left -= 1;
+            }
         }
-        println!();
+    }
+
+    for worker_thread in worker_threads {
+        worker_thread.join().unwrap();
     }
 }

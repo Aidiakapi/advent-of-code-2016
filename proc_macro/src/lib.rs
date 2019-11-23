@@ -126,6 +126,7 @@ fn generate_module_list_impl(token_stream: TokenStream) -> Result<TokenStream, D
                     part_tokens.extend(quote!(
                         ($part_name, |input: &str| -> Result<String> {
                             use ::anyhow::anyhow;
+                            let input = input.trim();
                             let input = $call_parser(input)
                                 .map_err(|err| anyhow!("parse error {:?}", err))
                                 .and_then(|(remainder, v)| {
@@ -142,6 +143,7 @@ fn generate_module_list_impl(token_stream: TokenStream) -> Result<TokenStream, D
                 None => {
                     part_tokens.extend(quote!(
                         ($part_name, |input: &str| -> Result<String> {
+                            let input = input.trim();
                             Ok(format!("{}", $call_part(input)?))
                         }),
                     ));

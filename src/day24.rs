@@ -1,6 +1,5 @@
 use crate::astar::AStar;
 use crate::prelude::*;
-use colored::Colorize;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Map {
@@ -80,14 +79,7 @@ impl Display for Map {
 pub struct Pts(pub usize, pub usize);
 impl Display for Pts {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(
-            f,
-            "{} {}\n{} {}",
-            "pt1".blue().bold(),
-            self.0,
-            "pt2".blue().bold(),
-            self.1
-        )
+        write!(f, "pt1 {}\npt2 {}", self.0, self.1)
     }
 }
 
