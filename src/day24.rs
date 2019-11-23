@@ -75,21 +75,13 @@ impl Display for Map {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pts(pub usize, pub usize);
-impl Display for Pts {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "pt1 {}\npt2 {}", self.0, self.1)
-    }
-}
-
 // This day is a variation of the Travelling Salesman Problem, which is a
 // well known problem in computer science. There is currently no known
 // algorithm to find an exact solution in a better time than O(n^2*2^n).
 // However, since the amount of places to evaluate is only 8 in the input
 // I've chosen to perform a brute-force approach, with the one optimization
 // being that I precompute all the path lengths between the places.
-pub fn pts(map: Map) -> Result<Pts> {
+pub fn pts(map: Map) -> Result<Parts> {
     let mut astar = AStar::new();
 
     // First pre-compute the length to go from any of the points of interest
@@ -114,7 +106,7 @@ pub fn pts(map: Map) -> Result<Pts> {
 
     // Then permute the points of interest, and calculate the sum of the path sections
     // for each permutation. This is O(N!).
-    let mut min_path_len = Pts(std::usize::MAX, std::usize::MAX);
+    let mut min_path_len = (std::usize::MAX, std::usize::MAX);
     for permutation in
         (1..map.points_of_interest.len()).permutations(map.points_of_interest.len() - 1)
     {
@@ -129,7 +121,7 @@ pub fn pts(map: Map) -> Result<Pts> {
         min_path_len.1 = min_path_len.1.min(total_len);
     }
 
-    Ok(min_path_len)
+    Ok(min_path_len.to_parts())
 }
 
 pub fn parse(s: &str) -> IResult<&str, Map> {
@@ -224,7 +216,7 @@ fn day24() -> Result<()> {
     let example = parse(EXAMPLE).unwrap().1;
     assert_eq!(EXAMPLE, &example.to_string());
 
-    test_part!(|input| pts(input).map(|Pts(pt1, _)| pt1), example.clone() => 14);
+    test_part!(|input| pts(input).map(|Parts(pt1, _)| pt1), example.clone() => "14");
 
     Ok(())
 }

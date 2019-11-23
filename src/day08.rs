@@ -55,17 +55,13 @@ impl Display for Screen {
     }
 }
 
-pub fn pts(input: Vec<Instruction>) -> Result<String> {
+pub fn pts(input: Vec<Instruction>) -> Result<Parts> {
     let mut screen = Screen::new(50, 6);
     for instruction in &input {
         screen.apply(instruction);
     }
 
-    Ok(format!(
-        "{}\n{}",
-        screen.0.data.iter().filter(|x| **x).count(),
-        screen
-    ))
+    Ok((screen.0.data.iter().filter(|x| **x).count(), screen).to_parts())
 }
 
 pub fn parse(s: &str) -> IResult<&str, Vec<Instruction>> {
@@ -111,7 +107,8 @@ fn day08() -> Result<()> {
             "\
 ███░░░░
 ███░░░░
-░░░░░░░".replace("░", " ")
+░░░░░░░"
+                .replace("░", " ")
         );
         screen.apply(&Instruction::RotateColumn {
             column: 1,
@@ -122,7 +119,8 @@ fn day08() -> Result<()> {
             "\
 █░█░░░░
 ███░░░░
-░█░░░░░".replace("░", " ")
+░█░░░░░"
+                .replace("░", " ")
         );
         screen.apply(&Instruction::RotateRow { row: 0, amount: 4 });
         assert_eq!(
@@ -130,7 +128,8 @@ fn day08() -> Result<()> {
             "\
 ░░░░█░█
 ███░░░░
-░█░░░░░".replace("░", " ")
+░█░░░░░"
+                .replace("░", " ")
         );
         screen.apply(&Instruction::RotateColumn {
             column: 1,
@@ -141,7 +140,8 @@ fn day08() -> Result<()> {
             "\
 ░█░░█░█
 █░█░░░░
-░█░░░░░".replace("░", " ")
+░█░░░░░"
+                .replace("░", " ")
         );
     }
 

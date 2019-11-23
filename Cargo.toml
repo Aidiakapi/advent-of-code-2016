@@ -18,3 +18,11 @@ md5 = "0.7"
 
 [dependencies.aoc_proc_macro]
 path = "./proc_macro"
+
+[dependencies.crossterm]
+version = "0.13"
+features = [
+    "cursor",
+    "style",
+    "terminal"
+]

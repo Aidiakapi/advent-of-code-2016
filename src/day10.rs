@@ -2,7 +2,7 @@
 
 use crate::prelude::*;
 
-pub fn pts((inits, instrs): (Vec<Initializer>, HashMap<usize, Instruction>)) -> Result<String> {
+pub fn pts((inits, instrs): (Vec<Initializer>, HashMap<usize, Instruction>)) -> Result<Parts> {
     let mut outputs = HashMap::new();
     let mut bots = HashMap::new();
 
@@ -61,11 +61,7 @@ pub fn pts((inits, instrs): (Vec<Initializer>, HashMap<usize, Instruction>)) -> 
         }
     }
 
-    Ok(format!(
-        "{}\n{}",
-        pt1.unwrap(),
-        outputs[&0] * outputs[&1] * outputs[&2]
-    ))
+    Ok((pt1.unwrap(), outputs[&0] * outputs[&1] * outputs[&2]).to_parts())
 }
 
 pub fn parse(s: &str) -> IResult<&str, (Vec<Initializer>, HashMap<usize, Instruction>)> {
