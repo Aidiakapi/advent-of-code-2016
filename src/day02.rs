@@ -63,7 +63,7 @@ pub fn parse(s: &str) -> IResult<&str, Vec<Vec<Direction>>> {
             _ => return Err(()),
         })
     });
-    separated_list(tag("\n"), many1(read_dir))(s)
+    separated_list1(tag("\n"), many1(read_dir))(s)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

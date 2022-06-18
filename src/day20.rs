@@ -65,7 +65,7 @@ pub fn pt2(ranges: Vec<Range>) -> Result<u32> {
 
 pub fn parse(s: &str) -> IResult<&str, Vec<Range>> {
     use parsers::*;
-    separated_list(
+    separated_list1(
         line_ending,
         map(pair(u32_str, preceded(char('-'), u32_str)), |(from, to)| {
             Range { from, to }

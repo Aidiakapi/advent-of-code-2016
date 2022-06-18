@@ -89,7 +89,7 @@ pub fn parse(s: &str) -> IResult<&str, Vec<Ip7>> {
         ),
     ));
 
-    separated_list(line_ending, many1(part))(s)
+    separated_list1(line_ending, many1(part))(s)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

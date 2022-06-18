@@ -34,7 +34,7 @@ fn pathfind(
         .solve(
             from,
             |&pos| {
-                std::array::IntoIter::new(neighbors(pos))
+                IntoIterator::into_iter(neighbors(pos))
                     .filter(|&new_pos| !map.is_wall(new_pos))
                     .map(|new_pos| (new_pos, 1))
             },
@@ -141,7 +141,7 @@ pub fn parse(s: &str) -> IResult<&str, Map> {
     ));
 
     let row = many1(cell);
-    let grid = separated_list(line_ending, row);
+    let grid = separated_list1(line_ending, row);
     map_res(grid, |rows: Vec<Vec<Cell>>| {
         let height = rows.len();
         if height < 3 || height > 64 {

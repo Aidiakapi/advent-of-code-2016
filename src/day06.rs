@@ -29,7 +29,7 @@ pub fn pt2(input: Vec<String>) -> Result<String> {
 
 pub fn parse(s: &str) -> IResult<&str, Vec<String>> {
     use parsers::*;
-    separated_list(line_ending, map(alpha1, |v: &str| v.to_owned()))(s)
+    separated_list1(line_ending, map(alpha1, |v: &str| v.to_owned()))(s)
 }
 
 #[test]

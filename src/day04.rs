@@ -50,7 +50,7 @@ pub fn parse(s: &str) -> IResult<&str, Vec<Room>> {
     use parsers::*;
     let room = map(
         tuple((
-            separated_list(char('-'), alpha1),
+            separated_list1(char('-'), alpha1),
             preceded(char('-'), u32_str),
             terminated(preceded(char('['), alpha1), char(']')),
         )),
@@ -61,7 +61,7 @@ pub fn parse(s: &str) -> IResult<&str, Vec<Room>> {
         },
     );
 
-    separated_list(char('\n'), room)(s)
+    separated_list1(char('\n'), room)(s)
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]

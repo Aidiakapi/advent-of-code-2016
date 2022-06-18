@@ -27,7 +27,7 @@ where
 
 impl Display for Parts {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        use crossterm::style::{Colorize, StyledContent};
+        use crossterm::style::{StyledContent, Stylize};
         use fmt::Write;
         <StyledContent<&'static str> as Display>::fmt(&"pt1".yellow(), f)?;
         f.write_char(if self.0.contains('\n') { '\n' } else { ' ' })?;
@@ -36,5 +36,47 @@ impl Display for Parts {
         <StyledContent<&'static str> as Display>::fmt(&"pt2".yellow(), f)?;
         f.write_char(if self.1.contains('\n') { '\n' } else { ' ' })?;
         <String as Display>::fmt(&self.1, f)
+    }
+}
+
+pub(crate) trait IterEx: Iterator + Sized {
+    fn limit<F>(self, count: usize, append_if_limited: F) -> LimitIter<Self, F>
+    where
+        F: FnOnce() -> Self::Item,
+    {
+        LimitIter {
+            remainder: count,
+            iter: self,
+            append_if_limited: Some(append_if_limited),
+        }
+    }
+}
+
+impl<I: Iterator> IterEx for I {}
+
+pub struct LimitIter<I: Iterator, F: FnOnce() -> I::Item> {
+    remainder: usize,
+    iter: I,
+    append_if_limited: Option<F>,
+}
+
+impl<I: Iterator, F: FnOnce() -> I::Item> Iterator for LimitIter<I, F> {
+    type Item = I::Item;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.remainder == 0 {
+            if let Some(factory) = self.append_if_limited.take() {
+                Some(factory())
+            } else {
+                None
+            }
+        } else {
+            if let Some(item) = self.iter.next() {
+                self.remainder -= 1;
+                Some(item)
+            } else {
+                None
+            }
+        }
     }
 }

@@ -47,7 +47,7 @@ struct Cell {
 }
 
 fn cell_neighbors(cells: &Mat2<Cell>, pos: Vec2us) -> impl Iterator<Item = Vec2us> {
-    let mut neighbors = ArrayVec::<[Vec2us; 4]>::new();
+    let mut neighbors = ArrayVec::<Vec2us, 4>::new();
 
     let size = cells[pos].size;
     if pos.x > 0 && cells[pos.x - 1][pos.y].used <= size {
@@ -152,7 +152,7 @@ pub fn pt2(input: Vec<Node>) -> Result<u32> {
 
 pub fn parse(s: &str) -> IResult<&str, Vec<Node>> {
     use parsers::*;
-    let grid = separated_list(
+    let grid = separated_list1(
         line_ending,
         map(
             tuple((

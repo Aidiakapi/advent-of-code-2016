@@ -1,8 +1,7 @@
 #![feature(
-    array_value_iter,
-    const_generics,
-    const_generic_impls_guard,
-    optin_builtin_traits,
+    auto_traits,
+    iter_intersperse,
+    negative_impls,
     stmt_expr_attributes,
     trait_alias
 )]
@@ -21,7 +20,7 @@ mod vec3;
 
 use anyhow::anyhow;
 use aoc_proc_macro::generate_module_list;
-use itertools::Itertools;
+use prelude::IterEx;
 use std::fmt::{self, Display};
 use std::io::Write;
 use std::sync::{mpsc, Arc, Mutex};
@@ -108,19 +107,18 @@ fn pop_work(work_queue: &Mutex<Vec<Option<TaskWork>>>) -> Option<(usize, TaskWor
 fn init_progress<W: Write>(out: &mut W) -> crossterm::Result<()> {
     use crossterm::{
         queue,
-        style::{Colorize, PrintStyledContent, Styler},
-        Output,
+        style::{Print, PrintStyledContent, Stylize},
     };
     queue!(
         out,
         PrintStyledContent("\nAdvent".red().bold()),
-        Output(" "),
+        Print(" "),
         PrintStyledContent("of".white()),
-        Output(" "),
+        Print(" "),
         PrintStyledContent("Code".green().bold()),
-        Output(" "),
+        Print(" "),
         PrintStyledContent("2016".blue()),
-        Output("\n\n")
+        Print("\n\n")
     )?;
 
     out.flush()?;
@@ -132,9 +130,8 @@ fn update_progress<W: Write>(out: &mut W, tasks: &Vec<TaskTracker>) -> crossterm
     use crossterm::{
         cursor::MoveUp,
         queue,
-        style::{style, Colorize, PrintStyledContent, StyledContent, Styler},
+        style::{style, Print, PrintStyledContent, StyledContent, Stylize},
         terminal::{Clear, ClearType},
-        Output,
     };
 
     let total = tasks.len();
@@ -147,18 +144,18 @@ fn update_progress<W: Write>(out: &mut W, tasks: &Vec<TaskTracker>) -> crossterm
         out,
         MoveUp(1),
         Clear(ClearType::CurrentLine),
-        Output('['),
+        Print('['),
         PrintStyledContent(style(RepeatChar('=', completed)).white()),
         PrintStyledContent(style('>').white()),
-        Output(RepeatChar(' ', total - completed)),
-        Output("] ")
+        Print(RepeatChar(' ', total - completed)),
+        Print("] ")
     )?;
 
     for sections in tasks
         .iter()
         .filter(|task| task.state == TaskState::Running)
         .map(|task| {
-            let mut sections = ArrayVec::<[StyledContent<&'static str>; 3]>::new();
+            let mut sections = ArrayVec::<StyledContent<&'static str>, 3>::new();
             sections.push(task.module_name.green());
             sections.push(style(" "));
             sections.push(task.part_name.blue().bold());
@@ -169,12 +166,17 @@ fn update_progress<W: Write>(out: &mut W, tasks: &Vec<TaskTracker>) -> crossterm
             section.push(", ".grey());
             section
         })
+        .limit(10, || {
+            let mut section = ArrayVec::new();
+            section.push("...".grey());
+            section
+        })
     {
         for section in sections {
             queue!(out, PrintStyledContent(section))?;
         }
     }
-    queue!(out, Output('\n'))?;
+    queue!(out, Print('\n'))?;
 
     out.flush()?;
     Ok(())
@@ -184,16 +186,15 @@ fn output_results<W: Write>(out: &mut W, tasks: &Vec<TaskTracker>) -> crossterm:
     use crossterm::{
         cursor::MoveUp,
         queue,
-        style::{style, Colorize, PrintStyledContent, Styler},
+        style::{style, Print, PrintStyledContent, Stylize},
         terminal::{Clear, ClearType},
-        Output,
     };
 
     debug_assert!(tasks
         .iter()
         .all(|task| task.state == TaskState::Done && task.output.is_some()));
 
-    queue!(out, MoveUp(1), Clear(ClearType::CurrentLine), Output("\n"))?;
+    queue!(out, MoveUp(1), Clear(ClearType::CurrentLine), Print("\n"))?;
 
     for task in tasks {
         let output = task.output.as_ref().unwrap().as_ref();
@@ -202,21 +203,21 @@ fn output_results<W: Write>(out: &mut W, tasks: &Vec<TaskTracker>) -> crossterm:
         queue!(
             out,
             PrintStyledContent(task.module_name.blue().bold()),
-            Output(' '),
+            Print(' '),
             PrintStyledContent(task.part_name.green().bold())
         )?;
         if is_simple {
             queue!(
                 out,
-                Output(' '),
+                Print(' '),
                 PrintStyledContent(style(output.unwrap()).white()),
-                Output('\n')
+                Print('\n')
             )?;
             continue;
         }
         match output {
             Ok(value) => {
-                queue!(out, Output('\n'), PrintStyledContent(style(value).white()))?;
+                queue!(out, Print('\n'), PrintStyledContent(style(value).white()))?;
             }
             Err(err) => {
                 queue!(
@@ -227,7 +228,7 @@ fn output_results<W: Write>(out: &mut W, tasks: &Vec<TaskTracker>) -> crossterm:
             }
         }
 
-        queue!(out, Output('\n'))?;
+        queue!(out, Print('\n'))?;
     }
 
     out.flush()?;
@@ -236,7 +237,6 @@ fn output_results<W: Write>(out: &mut W, tasks: &Vec<TaskTracker>) -> crossterm:
 }
 
 fn main() {
-    
     let default_panic_hook = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |panic_info| {
         let stderr = std::io::stderr();

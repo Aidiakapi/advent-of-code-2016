@@ -95,7 +95,7 @@ pub fn parse(s: &str) -> IResult<&str, (Vec<Initializer>, HashMap<usize, Instruc
                 |(bot, low_to, high_to)| (None, Some((bot, Instruction { low_to, high_to }))),
             ),
         )),
-        (Vec::new(), HashMap::new()),
+        || (Vec::new(), HashMap::new()),
         |mut acc: (Vec<_>, HashMap<_, _>), (init, instr)| {
             if let Some(init) = init {
                 acc.0.push(init);

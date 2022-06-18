@@ -23,7 +23,7 @@ pub fn pt2(input: Vec<(u32, u32, u32)>) -> Result<usize> {
 
 pub fn parse(s: &str) -> IResult<&str, Vec<(u32, u32, u32)>> {
     use parsers::*;
-    separated_list(
+    separated_list1(
         tag("\n"),
         tuple((
             preceded(space0, u32_str),

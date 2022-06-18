@@ -49,7 +49,7 @@ pub fn parse(s: &str) -> nom::IResult<&str, Vec<Action>> {
         },
     );
 
-    separated_list(tag(", "), action)(s)
+    separated_list1(tag(", "), action)(s)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

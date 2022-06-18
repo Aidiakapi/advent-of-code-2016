@@ -41,7 +41,7 @@ pub fn parse(s: &str) -> IResult<&str, Vec<Disc>> {
             ),
             terminated(u64_str, pair(char('.'), opt(line_ending))),
         )),
-        Vec::new(),
+        || Vec::new(),
         |mut v, (idx, size, current)| {
             v.push(Disc { size, current });
             assert_eq!(idx, v.len());

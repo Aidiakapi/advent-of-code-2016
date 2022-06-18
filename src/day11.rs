@@ -1,10 +1,10 @@
 use crate::prelude::*;
 
-trait FacilityBounds = std::array::LengthAtMost32 + Clone + Eq + Ord + std::hash::Hash;
+trait FacilityBounds = Clone + Eq + Ord + std::hash::Hash;
 
 fn solve<const N: usize>(input: Vec<Vec<Module>>) -> Result<usize>
 where
-    [Element; N]: std::array::LengthAtMost32 + Default,
+    [Element; N]: Default,
     [bool; N]: Default,
 {
     use std::{collections::VecDeque, rc::Rc};
@@ -16,7 +16,7 @@ where
     }
     impl<const N: usize> TrackedFacility<[Element; N]>
     where
-        [Element; N]: std::array::LengthAtMost32 + Default,
+        [Element; N]: Default,
         [bool; N]: Default,
     {
         pub fn depth(&self) -> usize {
@@ -111,7 +111,7 @@ struct Facility<E: FacilityBounds> {
 
 impl<const N: usize> Facility<[Element; N]>
 where
-    [Element; N]: std::array::LengthAtMost32 + Default,
+    [Element; N]: Default,
     [bool; N]: Default,
 {
     fn from_input(input: Vec<Vec<Module>>) -> Result<Self> {
@@ -255,7 +255,7 @@ where
             .enumerate()
             .flat_map(move |(idx, elem)| {
                 let idx = idx as u8;
-                let mut array: ArrayVec<[Moveable; 2]> = ArrayVec::new();
+                let mut array: ArrayVec<Moveable, 2> = ArrayVec::new();
                 unsafe {
                     if elem.generator() == elevator_position {
                         array.push_unchecked(Moveable::Generator(idx));
@@ -332,7 +332,7 @@ pub fn parse(s: &str) -> IResult<&str, Vec<Vec<Module>>> {
                     ),
                     alt((
                         map(tag("nothing relevant"), |_| Vec::new()),
-                        separated_list(
+                        separated_list1(
                             alt((tag(", and "), tag(" and "), tag(", "))),
                             alt((
                                 map(
@@ -349,7 +349,7 @@ pub fn parse(s: &str) -> IResult<&str, Vec<Vec<Module>>> {
                 ),
                 terminated(char('.'), opt(line_ending)),
             ),
-            HashMap::new(),
+            || HashMap::new(),
             |mut acc, (floor, modules)| {
                 acc.insert(floor, modules);
                 acc

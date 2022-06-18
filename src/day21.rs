@@ -148,7 +148,7 @@ pub fn parse(s: &str) -> IResult<&str, Vec<Instruction>> {
         ),
     ));
 
-    separated_list(line_ending, line)(s)
+    separated_list1(line_ending, line)(s)
 }
 
 #[test]

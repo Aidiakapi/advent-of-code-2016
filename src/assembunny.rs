@@ -208,5 +208,5 @@ pub fn parse_assembunny(s: &str) -> nom::IResult<&str, Vec<Instruction>> {
         instr_2op("jnz", Instruction::JumpIfNotZero),
     ));
 
-    separated_list(line_ending, instruction)(s)
+    separated_list1(line_ending, instruction)(s)
 }

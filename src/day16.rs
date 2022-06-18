@@ -48,7 +48,7 @@ pub fn pt2(input: BitVec) -> Result<String> {
 
 pub fn parse(s: &str) -> IResult<&str, BitVec> {
     use parsers::*;
-    fold_many1(one_of("01"), BitVec::with_capacity(s.len()), |mut v, c| {
+    fold_many1(one_of("01"), || BitVec::with_capacity(s.len()), |mut v, c| {
         v.push(c == '1');
         v
     })(s)

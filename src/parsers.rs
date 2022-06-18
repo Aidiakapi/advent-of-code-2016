@@ -5,7 +5,7 @@ pub(crate) use nom::{
     character::complete::{alpha1, anychar, char, digit1, line_ending, one_of, space0, space1},
     combinator::{flat_map, map, map_res, opt},
     error::ErrorKind,
-    multi::{fold_many1, many0, many1, separated_list},
+    multi::{fold_many1, many0, many1, separated_list1},
     sequence::{delimited, pair, preceded, terminated, tuple},
     Err, IResult,
 };

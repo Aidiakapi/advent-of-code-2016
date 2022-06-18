@@ -215,7 +215,7 @@ mod tests {
             terminated(take_while(|c: char| c != '\r' && c != '\n'), line_ending),
         );
         let maze_grid = map_res(
-            separated_list(line_ending, maze_char1),
+            separated_list1(line_ending, maze_char1),
             |lines: Vec<&str>| {
                 let linelen = lines[0].len();
                 if !lines.iter().skip(1).all(|line| line.len() == linelen) {
@@ -267,7 +267,7 @@ mod tests {
             },
         );
         all_consuming(terminated(
-            separated_list(many1(line_ending), maze),
+            separated_list1(many1(line_ending), maze),
             many0(line_ending),
         ))(TEST_FILE)
         .unwrap()

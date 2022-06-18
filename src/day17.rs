@@ -157,7 +157,7 @@ pub fn pt1(input: Vec<u8>) -> Result<String> {
 
             let digest = md5::compute(&buf);
             let (updown, leftright) = (digest[0], digest[1]);
-            let mut dirs: ArrayVec<[Direction; 4]> = ArrayVec::new();
+            let mut dirs: ArrayVec<Direction, 4> = ArrayVec::new();
             if (updown >> 4) > 10 {
                 dirs.push(Direction::Up);
             }

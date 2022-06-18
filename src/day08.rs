@@ -86,7 +86,7 @@ pub fn parse(s: &str) -> IResult<&str, Vec<Instruction>> {
             |(column, amount)| Instruction::RotateColumn { column, amount },
         ),
     ));
-    separated_list(line_ending, instruction)(s)
+    separated_list1(line_ending, instruction)(s)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

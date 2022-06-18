@@ -8,21 +8,14 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1.0"
-arrayvec = "0.5"
-bitvec = "0.15"
-itertools = "0.8"
-nom = "5.0"
-num = "0.2"
+arrayvec = "0.7"
+bitvec = "1.0"
+crossterm = "0.23"
+itertools = "0.10"
+nom = "7.1"
+num = "0.4"
 num_cpus = "1.11"
 md5 = "0.7"
 
 [dependencies.aoc_proc_macro]
 path = "./proc_macro"
-
-[dependencies.crossterm]
-version = "0.13"
-features = [
-    "cursor",
-    "style",
-    "terminal"
-]
